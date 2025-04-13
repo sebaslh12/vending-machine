@@ -110,7 +110,7 @@ Main class that handles:
 
 ## Future Improvements
 
-- Add a product size restriction: Machines should have a maximum product allocation, after that limit is reached no products can be added only swap is allowed.
+- Add a product size restriction: Machines should have a maximum product allocation (for both the maximum of each product that the machine can hold and to the total products within the machine), after that limit is reached no products can be added only swap is allowed.
 - Allow coins to be inserted before the product selection, given the requirements this was not included but it could be a feature added to the machine.
 - Card payment support: as the implementation goes adding a new payment method will require changing the function called when selecting the buy product option
 - Sales reporting: As it will form part of a more complex system, each machine should be able to report sales given a cycle (daily, weekly)
