@@ -2,13 +2,15 @@ import sys
 from store.products import get_products_from_file, save_products_to_file
 from store.change import get_change_from_file, save_change_to_file
 from decorators.auth import auth_decorator
+from typings.change_types import Change
+from typings.product_types import Products, ProductInfo
 
 class VendingMachine:
     def __init__(self):
-        self.products = {}  # name: {'price': price_in_pence, 'quantity': quantity}
-        self.change = {1: 0, 2: 0, 5: 0, 10: 0, 20: 0, 50: 0, 100: 0, 200: 0}  # denomination in pence: count
+        self.products: Products = {}  # name: {'price': price_in_pence, 'quantity': quantity}
+        self.change: Change = {1: 0, 2: 0, 5: 0, 10: 0, 20: 0, 50: 0, 100: 0, 200: 0}  # denomination in pence: count
 
-    def load_products(self, products):
+    def load_products(self, products: Products) -> None:
         ## check price to be greater than 0
         for name, info in products.items():
             if 'price' in info and info['price'] > 0 and 'quantity' in info and info['quantity'] > 0:
@@ -16,7 +18,7 @@ class VendingMachine:
             else:
                 print('Price and Quantity must be greater than 0')
 
-    def load_change(self, coins):
+    def load_change(self, coins: Change) -> None:
         is_empty = True
         for coin, count in coins.items():
             if is_empty and count > 0:
@@ -25,14 +27,14 @@ class VendingMachine:
         if is_empty:
             print("\nNo change available, please insert exact values")
 
-    def display_products(self, reloading=False):
+    def display_products(self, reloading=False) -> None:
         print("\nAvailable Products:")
         for idx, (name, info) in enumerate(self.products.items(), start=1):
             if info['quantity'] > 0 or reloading:
                 print(f"{idx}. {name} - £{info['price'] / 100:.2f} ({info['quantity']} in stock)")
         print()
 
-    def select_product(self):
+    def select_product(self) -> (tuple[str, ProductInfo] | None):
         if not self.products:
             print("\nThere are no available Products, come back later")
             return None
@@ -52,7 +54,7 @@ class VendingMachine:
             print("Invalid selection.")
             return None
 
-    def insert_money(self, price):
+    def insert_money(self, price: int) -> int:
         print(f"Insert coins to reach £{price/100:.2f}")
         inserted = 0
         while inserted < price:
@@ -68,8 +70,8 @@ class VendingMachine:
                 print("Please insert a valid number.")
         return inserted
 
-    def give_change(self, amount):
-        change_to_give = {}
+    def give_change(self, amount: int) -> Change:
+        change_to_give: Change = {}
         for coin in sorted(self.change.keys(), reverse=True):
             while amount >= coin and self.change[coin] > 0:
                 amount -= coin
@@ -87,7 +89,7 @@ class VendingMachine:
                 self.change[coin] += count
             return None
 
-    def buy_product(self):
+    def buy_product(self) -> None:
         selection = self.select_product()
         if not selection:
             return
@@ -112,13 +114,13 @@ class VendingMachine:
         self.products[name]['quantity'] -= 1
         print(f"Dispensing {name}. Thank you for your purchase!")
 
-    def exit(self):
+    def exit(self) -> None:
         save_change_to_file(self.change)
         save_products_to_file(self.products)
         print("Goodbye!")
         sys.exit()
 
-    def start(self):
+    def start(self) -> None:
         while True:
             print("\n--- Vending Machine ---")
             print("1. Buy Product")
@@ -139,7 +141,7 @@ class VendingMachine:
                     print("Invalid choice.")
 
     @auth_decorator
-    def reload_products_menu(self):
+    def reload_products_menu(self) -> None:
         self.display_products(True)
         name = input("Enter product name: ")
         price = int(float(input("Enter product price (£): ")) * 100)
@@ -147,11 +149,12 @@ class VendingMachine:
         if price < 0 or quantity < 0:
             print(f"{name} not added, price and quantity must be greater than 0")
             return None
-        self.load_products({name: {'price': price, 'quantity': quantity}})
+        product_to_load: Products ={ name: { 'price': price, 'quantity': quantity} }
+        self.load_products(product_to_load)
         print(f"Loaded {quantity} x {name}(s) at £{price/100:.2f} each.")
 
     @auth_decorator
-    def reload_change_menu(self):
+    def reload_change_menu(self) -> None:
         print("Reload change:")
         for coin in self.change.keys():
             amount = int(input(f"How many {coin}p coins to add?: "))
