@@ -36,7 +36,7 @@ If the container already exists:
 
 #### Local
 
-It is advised to create a (virtual env)[https://docs.astral.sh/uv/pip/environments/] that matches the python min version requirement:
+It is advised to create a [virtual env](https://docs.astral.sh/uv/pip/environments/) that matches the python min version requirement:
 ```bash
 python vending_machine.py
 ```
